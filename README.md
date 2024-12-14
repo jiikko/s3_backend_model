@@ -1,8 +1,6 @@
 # S3BackendModel
 
-TODO: Delete this and the text below, and describe your gem
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/s3_backend_model`. To experiment with that code, run `bin/console` for an interactive prompt.
+A library for persisting models on S3.
 
 ## Installation
 
@@ -20,7 +18,100 @@ gem install s3_backend_model
 
 ## Usage
 
-TODO: Write usage instructions here
+TODO: configuration(how to set credentials)
+
+- .all
+- .find(id)
+- .create(id:, body:, metadata: {})
+- #update
+- #destroy
+
+### Google アカウントのクレデンシャルを保存する例
+
+```ruby
+class GoogleCredential < S3BackendModel::Base
+  use_s3_backend bucket: 'hogehoge-bucket', prefix_key: 'google_credentials'
+
+  attr_accessor :id, :object
+
+  def self.instance
+    id = 'data.json'
+    find(id) || new(id: id, s3_head_object: {})
+  end
+
+  def initialize(id:, s3_head_object:)
+    @id = id
+    begin
+      @body = JSON.parse(fetch_body)
+    rescue Aws::S3::Errors::NoSuchKey
+      nil
+    end
+  end
+
+  def refresh_token
+    return if @body.nil?
+
+    @body['refresh_token']
+  end
+
+end
+```
+
+````ruby
+class OmniauthCallbacksController < ApplicationController
+  def google_oauth2
+    if (credentials = request.env['omniauth.auth']['credentials']).present?
+      GoogleCredential.instance.update(credentials.to_json, params: { content_type: 'application/json' })
+    end
+
+    redirect_to root_path, notice: 'Google OAuth2 authentication was successful.'
+  end
+end
+```
+
+### スクレイピングしたYouTube動画情報を保存する例
+
+```ruby
+class Video < S3BackendModel::Base
+  use_s3_backend bucket: 'hogehoge-bucket', prefix_key: 'videos'
+
+  attr_accessor :id, :s3_head_object
+
+  def initialize(id:, s3_head_object:)
+    @id = id
+    @s3_head_object = s3_head_object
+  end
+
+  def title
+    return unless s3_head_object.metadata['title'].present?
+
+    Base64.strict_decode64(s3_head_object.metadata['title']).force_encoding('UTF-8')
+  end
+
+  def user_name
+    s3_head_object.metadata['user_name']
+  end
+
+  def created_at
+    s3_head_object.metadata['created_at']&.to_time
+  end
+
+  def metadata
+    s3_head_object.metadata
+  end
+end
+```
+
+```ruby
+metadata = {
+  title: Base64.strict_encode64(live.title),
+  user_id: @user.id.to_s,
+  user_name: @user.name,
+  created_at: live.created_at.to_s
+}
+Video.create(id: live.live_id, body: nil, metadata: metadata)
+```
+
 
 ## Development
 

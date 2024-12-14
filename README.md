@@ -30,7 +30,7 @@ TODO: configuration(how to set credentials)
 - #update
 - #destroy
 
-### Google アカウントのクレデンシャルを保存する例
+### Google アカウント OAuth2 クレデンシャルを保存する例
 
 ```ruby
 class GoogleCredential < S3BackendModel::Base

@@ -2,6 +2,10 @@
 
 A library for persisting models on S3.
 
+### なぜ S3 に保存するのか？
+
+ちょっとしたツールでデータを永続化する際、RDBMS や NoSQL データベースは管理の手間がかかりすぎたり、コストが高すぎたりすることがあります。一方、S3 は設定が簡単で、低コストかつデータの共有が容易なため、シンプルな永続化ニーズに適しています。
+
 ## Installation
 
 Install the gem and add to the application's Gemfile by executing:
@@ -69,7 +73,7 @@ class OmniauthCallbacksController < ApplicationController
 end
 ```
 
-### スクレイピングしたYouTube動画情報を保存する例
+### スクレイピングした YouTube 動画情報を保存する例
 
 ```ruby
 class Video < S3BackendModel::Base
@@ -112,13 +116,11 @@ metadata = {
 Video.create(id: live.live_id, body: nil, metadata: metadata)
 ```
 
-
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/jiikko/s3_backend_model.
 

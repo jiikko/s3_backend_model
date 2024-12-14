@@ -57,7 +57,7 @@ class GoogleCredential < S3BackendModel::Base
 end
 ```
 
-````ruby
+```ruby
 class OmniauthCallbacksController < ApplicationController
   def google_oauth2
     if (credentials = request.env['omniauth.auth']['credentials']).present?

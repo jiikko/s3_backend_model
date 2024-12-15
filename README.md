@@ -34,7 +34,8 @@ TODO: configuration(how to set credentials)
 
 ```ruby
 class GoogleCredential < S3BackendModel::Base
-  use_s3_backend bucket: 'hogehoge-bucket', prefix_key: 'google_credentials'
+  use_s3_backend bucket: 'hogehoge-bucket', prefix_key: 'google_credentials',
+    s3_client: Aws::S3::Client.new(region: 'ap-northeast-1', credentials: Aws::Credentials.new(ENV.fetch('AWS_S3_ACCESS_KEY_ID'), ENV.fetch('AWS_S3_SECRET_ACCESS_KEY')))
 
   attr_accessor :id, :object
 
@@ -77,7 +78,8 @@ end
 
 ```ruby
 class Video < S3BackendModel::Base
-  use_s3_backend bucket: 'hogehoge-bucket', prefix_key: 'videos'
+  use_s3_backend bucket: 'hogehoge-bucket', prefix_key: 'videos',
+    s3_client: Aws::S3::Client.new(region: 'ap-northeast-1', credentials: Aws::Credentials.new(ENV.fetch('AWS_S3_ACCESS_KEY_ID'), ENV.fetch('AWS_S3_SECRET_ACCESS_KEY')))
 
   attr_accessor :id, :s3_head_object
 

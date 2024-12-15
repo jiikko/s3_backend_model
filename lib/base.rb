@@ -1,20 +1,13 @@
 module S3BackendModel
   class Base
-    def self.s3_credentials
-      @s3_credentials ||= Aws::Credentials.new(ENV.fetch('AWS_S3_ACCESS_KEY_ID'),
-                                               ENV.fetch('AWS_S3_SECRET_ACCESS_KEY'))
-    end
-
-    def self.s3_client
-      @s3_client ||= Aws::S3::Client.new(region: 'ap-northeast-1', credentials: s3_credentials)
-    end
-
-    def self.use_s3_backend(bucket:, prefix_key:)
+    def self.use_s3_backend(bucket:, prefix_key:, s3_client: nil)
       ArgumentError.new('bucket is required') if bucket.blank?
       ArgumentError.new('prefix_key is required') if prefix_key.blank?
+      ArgumentError.new('s3_client is required') if s3_client.blank?
 
       define_singleton_method(:s3_bucket) { bucket }
       define_singleton_method(:prefix_key) { prefix_key }
+      define_singleton_method(:s3_client) { s3_client }
 
       define_method(:s3_bucket) do
         self.class.s3_bucket

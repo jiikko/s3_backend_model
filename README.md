@@ -22,8 +22,6 @@ gem install s3_backend_model
 
 ## Usage
 
-TODO: configuration(how to set credentials)
-
 - .all
 - .find(id)
 - .create(id:, body:, metadata: {})
